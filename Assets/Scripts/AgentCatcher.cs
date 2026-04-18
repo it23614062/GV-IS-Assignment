@@ -62,10 +62,8 @@ public class AgentCatcher : MonoBehaviour
         }
     }
 
-    // ============================================================
     // OnTriggerEnter fires when the Agent's trigger collider
     // touches another collider.
-    // ============================================================
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
