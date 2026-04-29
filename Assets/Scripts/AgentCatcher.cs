@@ -73,7 +73,6 @@ public class AgentCatcher : MonoBehaviour
         }
     }
 
-    // ============================================================
     // Show the catch radius as a sphere in the editor
     // ============================================================
     private void OnDrawGizmos()
