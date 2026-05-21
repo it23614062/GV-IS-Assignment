@@ -2,18 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ZoneNavGraph : MonoBehaviour
+public class NavGraph : MonoBehaviour
 {
-    [Tooltip("The collider defining the boundaries of this specific zone.")]
-    public Collider zoneBoundary;
-
     public List<NavNode> GraphNodes { get; private set; } = new List<NavNode>();
 
     [ContextMenu("Draw Graph in Scene View")]
     public void GenerateGraphInEditor()
     {
         BuildGraphFromNavMesh();
-        Debug.Log($"Graph generated for {gameObject.name}!");
+        Debug.Log("Graph generated for visualization!");
     }
 
     private void Awake()
@@ -23,12 +20,6 @@ public class ZoneNavGraph : MonoBehaviour
 
     public void BuildGraphFromNavMesh()
     {
-        if (zoneBoundary == null)
-        {
-            Debug.LogError("Zone Boundary Collider is missing!", this);
-            return;
-        }
-
         GraphNodes.Clear();
         NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
         Vector3[] vertices = triangulation.vertices;
@@ -36,14 +27,6 @@ public class ZoneNavGraph : MonoBehaviour
 
         for (int i = 0; i < indices.Length; i += 3)
         {
-            Vector3 center = (vertices[indices[i]] + vertices[indices[i + 1]] + vertices[indices[i + 2]]) / 3f;
-
-            // FILTER: Only add this node if it is inside this zone's trigger box
-            if (!zoneBoundary.bounds.Contains(center))
-            {
-                continue;
-            }
-
             NavNode node = new NavNode
             {
                 id = i / 3,
@@ -55,11 +38,10 @@ public class ZoneNavGraph : MonoBehaviour
                 }
             };
 
-            node.center = center;
+            node.center = (node.vertices[0] + node.vertices[1] + node.vertices[2]) / 3f;
             GraphNodes.Add(node);
         }
 
-        // Link neighbors
         for (int i = 0; i < GraphNodes.Count; i++)
         {
             for (int j = i + 1; j < GraphNodes.Count; j++)
@@ -115,7 +97,7 @@ public class ZoneNavGraph : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if (GraphNodes == null || GraphNodes.Count == 0) return;
 
@@ -123,6 +105,7 @@ public class ZoneNavGraph : MonoBehaviour
         {
             Gizmos.color = Color.cyan;
             Gizmos.DrawSphere(node.center, 0.15f);
+
             Gizmos.color = Color.yellow;
             foreach (NavNode neighbor in node.neighbors)
             {
