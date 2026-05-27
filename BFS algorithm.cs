@@ -4,7 +4,7 @@ public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, 
     HashSet<NavNode> visited = new HashSet<NavNode>();
 
     queue.Enqueue(startNode);
-    // visited.Add(startNode); // BUG: Forgot to mark start as visited
+    visited.Add(startNode);
 
     while (queue.Count > 0)
     {
@@ -17,9 +17,12 @@ public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, 
 
         foreach (NavNode neighbor in currentNode.neighbors)
         {
-            // BUG: No visited check → infinite loop possible
-            neighbor.parent = currentNode;
-            queue.Enqueue(neighbor);
+            if (!visited.Contains(neighbor))
+            {
+                visited.Add(neighbor);
+                neighbor.parent = currentNode;
+                queue.Enqueue(neighbor);
+            }
         }
     }
     return null;
