@@ -1,5 +1,6 @@
 public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, Vector3 startPos, Vector3 targetPos)
 {
+    if (startNode == null || targetNode == null) return null;
     if (startNode == targetNode)
         return new List<Vector3> { startPos };
 
@@ -14,21 +15,23 @@ public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, 
     {
         NavNode currentNode = queue.Dequeue();
 
+        if (currentNode.neighbors == null) continue;
+
         foreach (NavNode neighbor in currentNode.neighbors)
         {
-            if (!visited.Contains(neighbor))
-            {
-                visited.Add(neighbor);
-                neighbor.parent = currentNode;
-                queue.Enqueue(neighbor);
+            if (neighbor == null || visited.Contains(neighbor)) continue;
 
-                if (neighbor == targetNode)
-                {
-                    return RetracePath(startNode, targetNode, startPos, targetPos);
-                }
+            visited.Add(neighbor);
+            neighbor.parent = currentNode;
+            queue.Enqueue(neighbor);
+
+            if (neighbor == targetNode)
+            {
+                return RetracePath(startNode, targetNode, startPos, targetPos);
             }
         }
     }
-    Debug.LogWarning("BFS: No path found");
+
+    Debug.LogWarning($"BFS: No path found from {startNode} to {targetNode}");
     return null;
 }
