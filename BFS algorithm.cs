@@ -1,37 +1,29 @@
 public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, Vector3 startPos, Vector3 targetPos)
-{
-    if (startNode == null || targetNode == null) return null;
-    if (startNode == targetNode)
-        return new List<Vector3> { startPos };
-
-    Queue<NavNode> queue = new Queue<NavNode>();
-    HashSet<NavNode> visited = new HashSet<NavNode>();
-
-    queue.Enqueue(startNode);
-    visited.Add(startNode);
-    startNode.parent = null;
-
-    while (queue.Count > 0)
     {
-        NavNode currentNode = queue.Dequeue();
+        Queue<NavNode> queue = new Queue<NavNode>();
+        HashSet<NavNode> visited = new HashSet<NavNode>();
 
-        if (currentNode.neighbors == null) continue;
+        queue.Enqueue(startNode);
+        visited.Add(startNode);
 
-        foreach (NavNode neighbor in currentNode.neighbors)
+        while (queue.Count > 0)
         {
-            if (neighbor == null || visited.Contains(neighbor)) continue;
+            NavNode currentNode = queue.Dequeue();
 
-            visited.Add(neighbor);
-            neighbor.parent = currentNode;
-            queue.Enqueue(neighbor);
-
-            if (neighbor == targetNode)
+            if (currentNode == targetNode)
             {
                 return RetracePath(startNode, targetNode, startPos, targetPos);
             }
-        }
-    }
 
-    Debug.LogWarning($"BFS: No path found from {startNode} to {targetNode}");
-    return null;
-}
+            foreach (NavNode neighbor in currentNode.neighbors)
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    visited.Add(neighbor);
+                    neighbor.parent = currentNode;
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+        return null;
+    }
