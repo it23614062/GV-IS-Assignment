@@ -2,7 +2,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public static class PathfindingAlgorithms
+{
+    public enum Algorithm { AStar, BFS }
 
+    public static List<Vector3> CalculateAStar(NavNode startNode, NavNode targetNode, Vector3 startPos, Vector3 targetPos)
+    {
+        List<NavNode> openSet = new List<NavNode>();
+        HashSet<NavNode> closedSet = new HashSet<NavNode>();
+
+        openSet.Add(startNode);
+
+      
+
+            foreach (NavNode neighbor in currentNode.neighbors)
+            {
+                if (closedSet.Contains(neighbor)) continue;
+
+                float newMovementCostToNeighbor = currentNode.gCost + Vector3.Distance(currentNode.center, neighbor.center);
+
+                if (newMovementCostToNeighbor < neighbor.gCost || !openSet.Contains(neighbor))
+                {
+                    neighbor.gCost = newMovementCostToNeighbor;
+                    neighbor.hCost = Vector3.Distance(neighbor.center, targetNode.center);
+                    neighbor.parent = currentNode;
+
+                    if (!openSet.Contains(neighbor))
+                        openSet.Add(neighbor);
+                }
+            }
+        }
+        return null;
+    }
 
     // NEW: Breadth-First Search implementation
     public static List<Vector3> CalculateBFS(NavNode startNode, NavNode targetNode, Vector3 startPos, Vector3 targetPos)
