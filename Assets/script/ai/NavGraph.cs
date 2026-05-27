@@ -6,11 +6,14 @@ public class NavGraph : MonoBehaviour
 {
     public List<NavNode> GraphNodes { get; private set; } = new List<NavNode>();
 
+    [Tooltip("Type the exact name of the NavMesh area this graph should build from (e.g., 'InvisibleArea1')")]
+    public string targetAreaName = "Walkable";
+
     [ContextMenu("Draw Graph in Scene View")]
     public void GenerateGraphInEditor()
     {
         BuildGraphFromNavMesh();
-        Debug.Log("Graph generated for visualization!");
+        Debug.Log($"Graph generated! Target Area: {targetAreaName} | Total Nodes Found: {GraphNodes.Count}");
     }
 
     private void Awake()
@@ -22,14 +25,34 @@ public class NavGraph : MonoBehaviour
     {
         GraphNodes.Clear();
         NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
+
         Vector3[] vertices = triangulation.vertices;
         int[] indices = triangulation.indices;
+        int[] areas = triangulation.areas; // Contains the Area ID for each triangle
 
+        // 1. Get the integer ID for the area string typed in the Inspector
+        int targetAreaIndex = NavMesh.GetAreaFromName(targetAreaName);
+
+        if (targetAreaIndex == -1)
+        {
+            Debug.LogError($"NavMesh Area '{targetAreaName}' not found! Check your spelling in the Navigation Window.");
+            return;
+        }
+
+        // 2. Loop through triangles
         for (int i = 0; i < indices.Length; i += 3)
         {
+            int triangleIndex = i / 3;
+
+            // 3. FILTER: Skip this triangle entirely if it doesn't match our target area
+            if (areas[triangleIndex] != targetAreaIndex)
+            {
+                continue;
+            }
+
             NavNode node = new NavNode
             {
-                id = i / 3,
+                id = triangleIndex,
                 vertices = new Vector3[]
                 {
                     vertices[indices[i]],
@@ -42,6 +65,7 @@ public class NavGraph : MonoBehaviour
             GraphNodes.Add(node);
         }
 
+        // 4. Connect the neighbors (this logic remains unchanged)
         for (int i = 0; i < GraphNodes.Count; i++)
         {
             for (int j = i + 1; j < GraphNodes.Count; j++)

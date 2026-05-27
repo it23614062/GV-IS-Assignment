@@ -105,7 +105,7 @@ public static class PathfindingAlgorithms
         return path;
     }
 
-    public static List<Vector3> SmoothPath(List<Vector3> rawPath)
+    public static List<Vector3> SmoothPath(List<Vector3> rawPath, int areaMask)
     {
         if (rawPath == null || rawPath.Count <= 2)
             return rawPath;
@@ -121,7 +121,8 @@ public static class PathfindingAlgorithms
 
             for (int i = rawPath.Count - 1; i > currentIndex; i--)
             {
-                if (!NavMesh.Raycast(rawPath[currentIndex], rawPath[i], out _, NavMesh.AllAreas))
+                // We replaced NavMesh.AllAreas with our specific areaMask
+                if (!NavMesh.Raycast(rawPath[currentIndex], rawPath[i], out _, areaMask))
                 {
                     furthestVisibleIndex = i;
                     break;
