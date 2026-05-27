@@ -13,7 +13,25 @@ public static class PathfindingAlgorithms
 
         openSet.Add(startNode);
 
-      
+        while (openSet.Count > 0)
+        {
+            NavNode currentNode = openSet[0];
+            for (int i = 1; i < openSet.Count; i++)
+            {
+                if (openSet[i].FCost < currentNode.FCost ||
+                   (openSet[i].FCost == currentNode.FCost && openSet[i].hCost < currentNode.hCost))
+                {
+                    currentNode = openSet[i];
+                }
+            }
+
+            openSet.Remove(currentNode);
+            closedSet.Add(currentNode);
+
+            if (currentNode == targetNode)
+            {
+                return RetracePath(startNode, targetNode, startPos, targetPos);
+            }
 
             foreach (NavNode neighbor in currentNode.neighbors)
             {
@@ -22,15 +40,7 @@ public static class PathfindingAlgorithms
                 float newMovementCostToNeighbor = currentNode.gCost + Vector3.Distance(currentNode.center, neighbor.center);
 
                 if (newMovementCostToNeighbor < neighbor.gCost || !openSet.Contains(neighbor))
-                {
-                    neighbor.gCost = newMovementCostToNeighbor;
-                    neighbor.hCost = Vector3.Distance(neighbor.center, targetNode.center);
-                    neighbor.parent = currentNode;
-
-                    if (!openSet.Contains(neighbor))
-                        openSet.Add(neighbor);
-                }
-            }
+                
         }
         return null;
     }
