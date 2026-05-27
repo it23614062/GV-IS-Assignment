@@ -84,5 +84,55 @@ private void FindAndMoveToTarget()
     {
         rawPath = PathfindingAlgorithms.CalculateBFS(startNode, endNode, clampedStartPos, clampedEndPos);
     }
+    if (rawPath != null && rawPath.Count > 0)
+{
+    int areaIndex = NavMesh.GetAreaFromName(navGraph.targetAreaName);
+    int areaMask = 1 << areaIndex;
+
+    List<Vector3> finalPath = applySmoothing
+        ? PathfindingAlgorithms.SmoothPath(rawPath, areaMask)
+        : rawPath;
+
+    debugPath = finalPath;
+
+    if (movementCoroutine != null)
+        StopCoroutine(movementCoroutine);
+
+    movementCoroutine = StartCoroutine(FollowPath(finalPath));
+}
+
+private IEnumerator FollowPath(List<Vector3> pathPoints)
+{
+    int currentWaypointIndex = 0;
+
+    while (currentWaypointIndex < pathPoints.Count)
+    {
+        Vector3 targetPosition = ClampPositionToBoundary(pathPoints[currentWaypointIndex]);
+        targetPosition.y = transform.position.y;
+
+        Vector3 direction = (targetPosition - transform.position).normalized;
+
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+        }
+
+        Vector3 newPosition = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            moveSpeed * Time.deltaTime
+        );
+
+        transform.position = ClampPositionToBoundary(newPosition);
+
+        if (Vector3.Distance(transform.position, targetPosition) <= stoppingDistance)
+        {
+            currentWaypointIndex++;
+        }
+
+        yield return null;
+    }
+}
 }
 }
