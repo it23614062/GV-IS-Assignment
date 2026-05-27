@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// This line forces Unity to add a CharacterController if you forgot!
+// This line force Unity to add a CharacterController if you forgot!
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private float horizontalInput;
     private float verticalInput;
-    private Vector3 velocity; // Stores vertical momentum (falling)
+    private Vector3 velocity; // Stores vertical  ()
 
     private Animator m_Animator;
     private Transform mainCameraTransform;
