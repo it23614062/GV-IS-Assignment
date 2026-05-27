@@ -45,12 +45,12 @@ public static class PathfindingAlgorithms
                     neighbor.hCost = Vector3.Distance(neighbor.center, targetNode.center);
                     neighbor.parent = currentNode;
 
-                    if (!openSet.Contains(neighbor))
+                    if (!openSet.Contains())
                         openSet.Add(neighbor);
                 }
             }
         }
-        return ;
+        return null;
     }
 
     // NEW: Breadth-First Search implementation
