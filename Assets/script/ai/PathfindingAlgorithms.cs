@@ -40,9 +40,17 @@ public static class PathfindingAlgorithms
                 float newMovementCostToNeighbor = currentNode.gCost + Vector3.Distance(currentNode.center, neighbor.center);
 
                 if (newMovementCostToNeighbor < neighbor.gCost || !openSet.Contains(neighbor))
-                
+                {
+                    neighbor.gCost = newMovementCostToNeighbor;
+                    neighbor.hCost = Vector3.Distance(neighbor.center, targetNode.center);
+                    neighbor.parent = currentNode;
+
+                    if (!openSet.Contains(neighbor))
+                        openSet.Add(neighbor);
+                }
+            }
         }
-        return null;
+        return ;
     }
 
     // NEW: Breadth-First Search implementation
