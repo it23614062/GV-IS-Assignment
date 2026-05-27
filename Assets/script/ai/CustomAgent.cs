@@ -38,4 +38,51 @@ public class CustomAgent : MonoBehaviour
             FindAndMoveToTarget();
         }
     }
+    void Update()
+{
+    if (targetDestination != null && navGraph != null)
+    {
+        Vector3 currentTargetPos = ClampPositionToBoundary(targetDestination.position);
+
+        if (Vector3.Distance(currentTargetPos, lastTargetPosition) > destinationUpdateThreshold)
+        {
+            lastTargetPosition = currentTargetPos;
+            FindAndMoveToTarget();
+        }
+    }
+}
+
+private void FindAndMoveToTarget()
+{
+    if (navGraph.GraphNodes.Count == 0)
+    {
+        Debug.LogWarning($"[{gameObject.name}] The NavGraph '{navGraph.targetAreaName}' has 0 nodes.");
+        return;
+    }
+
+    Vector3 clampedStartPos = ClampPositionToBoundary(transform.position);
+    Vector3 clampedEndPos = ClampPositionToBoundary(targetDestination.position);
+
+    NavNode startNode = navGraph.GetClosestNode(clampedStartPos);
+    NavNode endNode = navGraph.GetClosestNode(clampedEndPos);
+
+    if (startNode == null || endNode == null)
+    {
+        Debug.LogWarning($"[{gameObject.name}] Could not find a valid Start or End node.");
+        return;
+    }
+
+    navGraph.ResetAllNodes();
+
+    List<Vector3> rawPath = null;
+
+    if (pathfindingMethod == PathfindingAlgorithms.Algorithm.AStar)
+    {
+        rawPath = PathfindingAlgorithms.CalculateAStar(startNode, endNode, clampedStartPos, clampedEndPos);
+    }
+    else if (pathfindingMethod == PathfindingAlgorithms.Algorithm.BFS)
+    {
+        rawPath = PathfindingAlgorithms.CalculateBFS(startNode, endNode, clampedStartPos, clampedEndPos);
+    }
+}
 }
