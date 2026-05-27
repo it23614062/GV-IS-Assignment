@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     public float speed = 10.0f;
     public float rotationSpeed = 720.0f;
-    public float gravity = -9.81f; // Added gravity
+    public float gravity = -9.81f; // Added gravity strength
 
     private float horizontalInput;
     private float verticalInput;
